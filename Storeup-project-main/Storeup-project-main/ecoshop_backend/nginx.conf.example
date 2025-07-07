@@ -1,0 +1,24 @@
+# مثال إعداد Nginx لدعم النطاقات الفرعية مع Django
+
+server {
+    listen 80;
+    server_name .mydomain.com;
+
+    location /static/ {
+        alias /path/to/static/;  # عدل هذا المسار لمجلد static في مشروعك
+    }
+
+    location /media/ {
+        alias /path/to/media/;  # عدل هذا المسار لمجلد media في مشروعك
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;  # يفترض أن gunicorn أو uwsgi يعمل على هذا البورت
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+# إذا كنت تستخدم HTTPS أضف إعدادات SSL هنا 
